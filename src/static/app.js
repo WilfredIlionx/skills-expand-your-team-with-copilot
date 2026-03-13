@@ -552,6 +552,14 @@ document.addEventListener("DOMContentLoaded", () => {
             .join("")}
         </ul>
       </div>
+      <div class="share-buttons">
+        <span class="share-label">Share:</span>
+        <button class="share-btn share-twitter" data-activity="${name}" title="Share on X (Twitter)">𝕏</button>
+        <button class="share-btn share-facebook" data-activity="${name}" title="Share on Facebook">f</button>
+        <button class="share-btn share-whatsapp" data-activity="${name}" title="Share on WhatsApp">💬</button>
+        <button class="share-btn share-email" data-activity="${name}" title="Share via Email">✉</button>
+        <button class="share-btn share-copy" data-activity="${name}" title="Copy link">🔗</button>
+      </div>
       <div class="activity-card-actions">
         ${
           currentUser
@@ -586,6 +594,38 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
     }
+
+    // Add click handlers for share buttons
+    const shareText = `Check out "${name}" at Mergington High School! ${details.description} Schedule: ${formattedSchedule}`;
+    const pageUrl = window.location.href;
+
+    activityCard.querySelector(".share-twitter").addEventListener("click", () => {
+      window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(pageUrl)}`, "_blank", "noopener");
+    });
+
+    activityCard.querySelector(".share-facebook").addEventListener("click", () => {
+      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}&quote=${encodeURIComponent(shareText)}`, "_blank", "noopener");
+    });
+
+    activityCard.querySelector(".share-whatsapp").addEventListener("click", () => {
+      window.open(`https://wa.me/?text=${encodeURIComponent(shareText + " " + pageUrl)}`, "_blank", "noopener");
+    });
+
+    activityCard.querySelector(".share-email").addEventListener("click", () => {
+      const subject = `Mergington High School Activity: ${name}`;
+      window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(shareText + "\n\n" + pageUrl)}`;
+    });
+
+    activityCard.querySelector(".share-copy").addEventListener("click", (e) => {
+      navigator.clipboard.writeText(shareText + " " + pageUrl).then(() => {
+        const btn = e.currentTarget;
+        btn.textContent = "✓";
+        setTimeout(() => { btn.textContent = "🔗"; }, 2000);
+        showMessage("Link copied to clipboard!", "success");
+      }).catch(() => {
+        showMessage("Failed to copy link.", "error");
+      });
+    });
 
     activitiesList.appendChild(activityCard);
   }
