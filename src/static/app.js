@@ -25,14 +25,29 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeLoginModal = document.querySelector(".close-login-modal");
   const loginMessage = document.getElementById("login-message");
 
-  // Activity categories with corresponding colors
-  const activityTypes = {
+  // Dark mode toggle elements
+  const themeToggle = document.getElementById("theme-toggle");
+  const themeIcon = themeToggle.querySelector(".theme-icon");
+  const themeLabel = themeToggle.querySelector(".theme-label");
+
+  // Activity categories with corresponding colors (light and dark variants)
+  const activityTypesLight = {
     sports: { label: "Sports", color: "#e8f5e9", textColor: "#2e7d32" },
     arts: { label: "Arts", color: "#f3e5f5", textColor: "#7b1fa2" },
     academic: { label: "Academic", color: "#e3f2fd", textColor: "#1565c0" },
     community: { label: "Community", color: "#fff3e0", textColor: "#e65100" },
     technology: { label: "Technology", color: "#e8eaf6", textColor: "#3949ab" },
   };
+
+  const activityTypesDark = {
+    sports: { label: "Sports", color: "#1b3a1b", textColor: "#66bb6a" },
+    arts: { label: "Arts", color: "#2a1b2e", textColor: "#ce93d8" },
+    academic: { label: "Academic", color: "#1b2a3a", textColor: "#64b5f6" },
+    community: { label: "Community", color: "#3a2e1b", textColor: "#ffb74d" },
+    technology: { label: "Technology", color: "#1b1b3a", textColor: "#9fa8da" },
+  };
+
+  let activityTypes = activityTypesLight;
 
   // State for activities and filters
   let allActivities = {};
@@ -43,6 +58,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Authentication state
   let currentUser = null;
+
+  // Dark mode toggle logic
+  function applyTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    if (theme === "dark") {
+      themeIcon.textContent = "☀️";
+      themeLabel.textContent = "Light";
+      activityTypes = activityTypesDark;
+    } else {
+      themeIcon.textContent = "🌙";
+      themeLabel.textContent = "Dark";
+      activityTypes = activityTypesLight;
+    }
+    localStorage.setItem("theme", theme);
+  }
+
+  // Load saved theme preference
+  const savedTheme = localStorage.getItem("theme") || "light";
+  applyTheme(savedTheme);
+
+  themeToggle.addEventListener("click", () => {
+    const current = document.documentElement.getAttribute("data-theme");
+    const next = current === "dark" ? "light" : "dark";
+    applyTheme(next);
+    // Re-render activities so tag colors update
+    displayFilteredActivities();
+  });
 
   // Time range mappings for the dropdown
   const timeRanges = {
